@@ -19,7 +19,9 @@ struct ContentView: View {
         User(firstName: "Arnold", lastName: "Rimmer"),
         User(firstName: "Dave", lastName: "Jones"),
         User(firstName: "Jess", lastName: "Donner")
-    ]
+    ].sorted {
+        $0.lastName < $1.lastName
+    }
     var body: some View {
         List(users) { user in
             Text(String(user.firstName + " " + user.lastName))
