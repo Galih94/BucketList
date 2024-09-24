@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        Map(interactionModes: [.rotate, .zoom])
+        Map(interactionModes: [])
             .mapStyle(.hybrid(elevation: .realistic))
     }
 }
