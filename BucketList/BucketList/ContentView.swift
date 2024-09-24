@@ -7,6 +7,12 @@
 import MapKit
 import SwiftUI
 
+struct Location: Identifiable {
+    let id = UUID()
+    var name: String
+    var coordinate: CLLocationCoordinate2D
+}
+
 struct ContentView: View {
     @State private var position = MapCameraPosition.region(
         MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 51.507222,
@@ -15,13 +21,22 @@ struct ContentView: View {
                                                   longitudeDelta: 1)
         )
     )
+    
+    let locations = [
+        Location(name: "Buckingham Palace", coordinate: CLLocationCoordinate2D(latitude: 51.501, longitude: -0.141)),
+        Location(name: "Tower of London", coordinate: CLLocationCoordinate2D(latitude: 51.508, longitude: -0.076))
+    ]
     var body: some View {
-        Map(position: $position)
-            .mapStyle(.hybrid(elevation: .realistic))
-            .onMapCameraChange(frequency: .continuous) { context in
-                
-                print("map: \(context.region)")
+        Map(position: $position) {
+            ForEach(locations) { location in
+                Marker(location.name, coordinate: location.coordinate)
             }
+        }
+        .mapStyle(.hybrid(elevation: .realistic))
+        .onMapCameraChange(frequency: .continuous) { context in
+            
+            print("map: \(context.region)")
+        }
         HStack {
             Button("Paris") {
                 position = MapCameraPosition.region(
