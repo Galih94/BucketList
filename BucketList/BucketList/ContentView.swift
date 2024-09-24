@@ -27,23 +27,30 @@ struct ContentView: View {
         Location(name: "Tower of London", coordinate: CLLocationCoordinate2D(latitude: 51.508, longitude: -0.076))
     ]
     var body: some View {
-        Map(position: $position) {
-            ForEach(locations) { location in
-                Annotation(location.name, coordinate: location.coordinate) {
-                    Text(location.name)
-                        .font(.headline)
-                        .padding()
-                        .background(.blue)
-                        .foregroundStyle(.white)
-                        .clipShape(.capsule)
+        MapReader { proxy in
+            Map(position: $position) {
+                ForEach(locations) { location in
+                    Annotation(location.name, coordinate: location.coordinate) {
+                        Text(location.name)
+                            .font(.headline)
+                            .padding()
+                            .background(.blue)
+                            .foregroundStyle(.white)
+                            .clipShape(.capsule)
+                    }
+                    .annotationTitles(.hidden)
                 }
-                .annotationTitles(.hidden)
             }
-        }
-        .mapStyle(.hybrid(elevation: .realistic))
-        .onMapCameraChange(frequency: .continuous) { context in
-            
-            print("map: \(context.region)")
+            .mapStyle(.hybrid(elevation: .realistic))
+            .onMapCameraChange(frequency: .continuous) { context in
+                
+                print("map: \(context.region)")
+            }
+            .onTapGesture { tapPosition in
+                if let coordinate = proxy.convert(tapPosition, from: .local) {
+                    print("tap coordinate: \(coordinate)")
+                }
+            }
         }
         HStack {
             Button("Paris") {
