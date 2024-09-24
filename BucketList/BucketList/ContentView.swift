@@ -29,7 +29,15 @@ struct ContentView: View {
     var body: some View {
         Map(position: $position) {
             ForEach(locations) { location in
-                Marker(location.name, coordinate: location.coordinate)
+                Annotation(location.name, coordinate: location.coordinate) {
+                    Text(location.name)
+                        .font(.headline)
+                        .padding()
+                        .background(.blue)
+                        .foregroundStyle(.white)
+                        .clipShape(.capsule)
+                }
+                .annotationTitles(.hidden)
             }
         }
         .mapStyle(.hybrid(elevation: .realistic))
