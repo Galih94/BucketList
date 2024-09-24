@@ -18,6 +18,10 @@ struct ContentView: View {
     var body: some View {
         Map(position: $position)
             .mapStyle(.hybrid(elevation: .realistic))
+            .onMapCameraChange(frequency: .continuous) { context in
+                
+                print("map: \(context.region)")
+            }
         HStack {
             Button("Paris") {
                 position = MapCameraPosition.region(
