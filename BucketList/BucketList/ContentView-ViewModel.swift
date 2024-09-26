@@ -6,6 +6,7 @@
 //
 
 import CoreLocation
+import LocalAuthentication
 import MapKit
 import Foundation
 
@@ -15,6 +16,8 @@ extension ContentView {
         let savePath = URL.documentsDirectory.appending(path: "SavedPlaces")
         private(set) var locations: [Location]
         var selectedPlace: Location?
+        var isUnlocked = false
+        let context = LAContext()
         
         init() {
             do {
@@ -45,6 +48,24 @@ extension ContentView {
                 try data.write(to: savePath, options: [.atomic, .completeFileProtection])
             } catch {
                 print("error -- \(error.localizedDescription)")
+            }
+        }
+        
+        func authenticate() {
+            var error: NSError?
+            if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+                let reason = "Please authenticate yourself to unlock your places"
+                context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { [weak self] isSuccess, authError in
+                    if isSuccess {
+                        self?.isUnlocked = true
+                    } else {
+                        self?.isUnlocked = false
+                        if let authError { print("error -- \(authError.localizedDescription)") }
+                    }
+                }
+            } else {
+                /// no biometrics
+                if let error { print("error -- \(error.localizedDescription)") }
             }
         }
     }

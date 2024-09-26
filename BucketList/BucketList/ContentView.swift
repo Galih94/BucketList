@@ -21,34 +21,44 @@ struct ContentView: View {
     )
     
     var body: some View {
-        MapReader { proxy in
-            Map(initialPosition: startPosition) {
-                ForEach(viewModel.locations) { location in
-                    Annotation(location.name, coordinate: location.coordinate) {
-                        Image(systemName: "star.circle")
-                            .resizable()
-                            .foregroundStyle(.red)
-                            .frame(width: 40, height: 40)
-                            .background(.white)
-                            .clipShape(.circle)
-                            .onLongPressGesture {
-                                viewModel.selectedPlace = location
-                            }
+        if viewModel.isUnlocked {
+            MapReader { proxy in
+                Map(initialPosition: startPosition) {
+                    ForEach(viewModel.locations) { location in
+                        Annotation(location.name, coordinate: location.coordinate) {
+                            Image(systemName: "star.circle")
+                                .resizable()
+                                .foregroundStyle(.red)
+                                .frame(width: 40, height: 40)
+                                .background(.white)
+                                .clipShape(.circle)
+                                .onLongPressGesture {
+                                    viewModel.selectedPlace = location
+                                }
+                        }
                     }
                 }
-            }
-            .mapStyle(.standard)
-            .onTapGesture { position in
-                if let coordinate = proxy.convert(position, from: .local) {
-                    viewModel.addLocation(at: coordinate)
+                .mapStyle(.standard)
+                .onTapGesture { position in
+                    if let coordinate = proxy.convert(position, from: .local) {
+                        viewModel.addLocation(at: coordinate)
+                    }
+                }
+                .sheet(item: $viewModel.selectedPlace) { place in
+                    EditView(location: place) { newLocation in
+                        viewModel.update(location: newLocation)
+                    }
+                    
                 }
             }
-            .sheet(item: $viewModel.selectedPlace) { place in
-                EditView(location: place) { newLocation in
-                    viewModel.update(location: newLocation)
-                }
-                
+        } else {
+            Button("Unlock Placess") {
+                viewModel.authenticate()
             }
+            .padding()
+            .background(.blue)
+            .foregroundStyle(.white)
+            .clipShape(.capsule)
         }
     }
 }
