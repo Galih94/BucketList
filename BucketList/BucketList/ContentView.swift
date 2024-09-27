@@ -38,7 +38,7 @@ struct ContentView: View {
                         }
                     }
                 }
-                .mapStyle(.standard)
+                .mapStyle(viewModel.isMapHybrid ? .hybrid : .standard )
                 .onTapGesture { position in
                     if let coordinate = proxy.convert(position, from: .local) {
                         viewModel.addLocation(at: coordinate)
@@ -49,6 +49,11 @@ struct ContentView: View {
                         viewModel.update(location: newLocation)
                     }
                     
+                }
+                HStack {
+                    Button(viewModel.isMapHybrid ? "Standard" : "Hybrid") {
+                        viewModel.isMapHybrid.toggle()
+                    }
                 }
             }
         } else {
